@@ -10,7 +10,7 @@ builder.Services.AddControllersWithViews();
 
 
 builder.Services.AddDbContext<AppDbContext>(opt =>
-opt.UseSqlServer("server=DESKTOP-M68M69T\\SQLEXPRESS;database=ProniaBP217DB;trusted_connection = true;integrated security=true;TrustServerCertificate=true;")
+opt.UseSqlServer(builder.Configuration.GetConnectionString("Default"))
 );
 
 

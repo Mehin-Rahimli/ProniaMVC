@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProniaMVC.DAL;
 using ProniaMVC.Models;
 using ProniaMVC.ViewModels;
@@ -13,19 +14,17 @@ namespace ProniaMVC.Controllers
         {
 
            _context=context;
-            //_context=new AppDbContext();
-                //AppDbContext appDb = new AppDbContext();
+           
         }
         public IActionResult Index()
         {
+          
            
-
-            //_context.Slides.AddRange(slides);
-            //_context.SaveChanges
            
             HomeVM homeVM = new HomeVM
             {
-                Slides = _context.Slides.OrderBy(s => s.Order).Take(2).ToList()
+                Slides = _context.Slides.OrderBy(s => s.Order).Take(2).ToList(),
+                Products=_context.Products.Include(p=>p.ProductImages).ToList(),
             };
             return View(homeVM);
         }

@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "UDHh1MiVfyDVR5CEd/vaVJfSXefo1YlYz3KLw99esrs=",
+  "Hash": "RGmnN9VMsQ0DuIMPgHgPgo4BZuviuO/Skd6jYYP4e04=",
   "Source": "ProniaMVC",
   "BasePath": "_content/ProniaMVC",
   "Mode": "Default",
@@ -3112,6 +3112,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\assets\\images\\website-images\\service.png"
+    },
+    {
+      "Identity": "C:\\Users\\User\\OneDrive\\Desktop\\Documents\\Thirdproject\\ProniaMVC\\ProniaMVC\\wwwroot\\assets\\images\\website-images\\tulip-flowers.png",
+      "SourceId": "ProniaMVC",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\User\\OneDrive\\Desktop\\Documents\\Thirdproject\\ProniaMVC\\ProniaMVC\\wwwroot\\",
+      "BasePath": "_content/ProniaMVC",
+      "RelativePath": "assets/images/website-images/tulip-flowers.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\assets\\images\\website-images\\tulip-flowers.png"
     },
     {
       "Identity": "C:\\Users\\User\\OneDrive\\Desktop\\Documents\\Thirdproject\\ProniaMVC\\ProniaMVC\\wwwroot\\assets\\js\\main.js",

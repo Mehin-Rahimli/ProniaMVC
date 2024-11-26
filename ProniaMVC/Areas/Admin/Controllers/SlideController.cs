@@ -29,7 +29,7 @@ namespace ProniaMVC.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(int? id,Slide slide)
+        public async Task<IActionResult> Create(/*int? id,*/Slide slide)
         {
             //if(!slide.Photo.ContentType.Contains("image"/))
             //{
@@ -43,7 +43,7 @@ namespace ProniaMVC.Areas.Admin.Controllers
             //}
             //return Content(slide.Photo.FileName);
 
-            return Content(slide.Photo.FileName + " " + slide.Photo.ContentType + " " + slide.Photo.Length);
+           // return Content(slide.Photo.FileName + " " + slide.Photo.ContentType + " " + slide.Photo.Length);
 
             if (!ModelState.IsValid) return View();
 

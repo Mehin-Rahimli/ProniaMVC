@@ -12,9 +12,9 @@ namespace ProniaMVC.Models
         public string Image {  get; set; }
         public int Order { get; set; }
 
-        //[NotMapped]
-        //public IFormFile Photo { get; set; }
-       
+        [NotMapped]
+        public IFormFile Photo { get; set; }
+
 
     } 
 }

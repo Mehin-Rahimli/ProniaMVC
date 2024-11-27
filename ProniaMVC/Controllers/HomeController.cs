@@ -25,7 +25,7 @@ namespace ProniaMVC.Controllers
             {
                 Slides =await _context.Slides
                 .OrderBy(s => s.Order)
-                .Take(2)
+                .Take(7)
                 .ToListAsync(),
                 
                 

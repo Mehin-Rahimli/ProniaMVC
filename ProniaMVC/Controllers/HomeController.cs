@@ -32,7 +32,8 @@ namespace ProniaMVC.Controllers
 
                 Products=await _context.Products
                 .Take(8)
-                .Include(p=>p.ProductImages.Where(pi=>pi.IsPrimary!=null))
+                .Include(p=>p.ProductImages
+                .Where(pi=>pi.IsPrimary!=null))
                 .ToListAsync(),
             };
             return View(homeVM);

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ProniaMVC.Areas.Admin.ViewModels;
 using ProniaMVC.Areas.Admin.ViewModels;
 using ProniaMVC.DAL;
+using ProniaMVC.Models;
 
 namespace ProniaMVC.Areas.Admin.Controllers
 {
@@ -47,6 +48,7 @@ namespace ProniaMVC.Areas.Admin.Controllers
         {
             CreateProductVM productVM = new CreateProductVM
             {
+                Tags=await _context.Tags.ToListAsync(),
                 Categories = await _context.Categories.ToListAsync()
             };
 
@@ -58,6 +60,9 @@ namespace ProniaMVC.Areas.Admin.Controllers
         public async Task<IActionResult> Create(CreateProductVM productVM)
         {
             productVM.Categories = await _context.Categories.ToListAsync();
+
+            productVM.Tags = await _context.Tags.ToListAsync();
+
             if (!ModelState.IsValid)
             {
                 return View(productVM);
@@ -70,7 +75,96 @@ namespace ProniaMVC.Areas.Admin.Controllers
                 ModelState.AddModelError(nameof(CreateProductVM.CategoryId), "Category doesn't exist");
                 return View(productVM );
             }
-            return Content("as");
+
+
+            if (productVM.TagIds is not null)
+            {
+                bool tagResult = productVM.TagIds.Any(tId => !productVM.Tags.Exists(t => t.Id == tId));
+
+                if (tagResult)
+                {
+                    ModelState.AddModelError(nameof(CreateProductVM.TagIds), "Tags are wrong");
+                    return View(productVM);
+                }
+            }
+
+            Product product = new()
+            {
+                Name = productVM.Name,
+                SKU = productVM.SKU,
+                CategoryId = productVM.CategoryId.Value,
+                Description = productVM.Description,
+                Price = productVM.Price.Value,
+                CreatedAt = DateTime.Now,
+                IsDeleted = false,
+               
+                
+            };
+
+            if(productVM.TagIds is not null)
+            {
+                product.ProductTags = productVM.TagIds.Select(tId => new ProductTag { TagId = tId }).ToList();
+            }
+
+
+
+            await _context.Products.AddAsync(product);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+
+        }
+
+        public async Task<IActionResult> Update(int? id )
+        {
+            if (id == null || id < 1) return BadRequest();
+            Product product=await _context.Products.Include(p=>p.ProductTags).FirstOrDefaultAsync(p=>p.Id==id);
+
+            if(product==null) return NotFound();
+            UpdateProductVM productVM = new()
+            {
+                Name = product.Name,
+                SKU = product.SKU,
+                CategoryId = product.CategoryId,
+                Description = product.Description,
+                Price = product.Price,
+                TagIds=product.ProductTags.Select(pt=>pt.TagId).ToList(),
+                Categories = await _context.Categories.ToListAsync(),
+                Tags=await _context.Tags.ToListAsync()
+            };
+
+            return View(productVM);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Update(int?id,UpdateProductVM productVM)
+        {
+            if (id == null || id < 1) return BadRequest();
+            
+            productVM.Categories=await _context.Categories.ToListAsync();
+
+            if(!ModelState.IsValid)
+            {
+                return View(productVM);
+            }
+            
+            Product existed = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+
+            if (existed == null) return NotFound();
+
+            if(existed.CategoryId!=productVM.CategoryId)
+            {
+                return View(productVM);
+            }
+
+
+            existed.SKU=productVM.SKU;
+            existed.Price=productVM.Price.Value;
+            existed.CategoryId = productVM.CategoryId.Value;
+            existed.Description=productVM.Description;
+            existed.Name=productVM.Name;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));   
 
         }
     }

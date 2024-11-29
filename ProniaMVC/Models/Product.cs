@@ -13,6 +13,8 @@
 
         public List<ProductImage> ProductImages { get; set; }
 
+        public List<ProductTag> ProductTags { get; set; }
+
 
 
 

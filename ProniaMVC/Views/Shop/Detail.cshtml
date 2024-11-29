@@ -192,9 +192,12 @@
                         <div class="product-category product-tags">
                             <span class="title">Tags :</span>
                             <ul>
-                                <li>
-                                    <a href="#">Furniture</a>
-                                </li>
+                               @foreach(ProductTag pTag in Model.Product.ProductTags)
+                                {
+                                    <li>
+                                        <a href="#">@pTag.Tag.Name,</a>
+                                    </li>
+                                }
                             </ul>
                         </div>
                         <div class="product-category social-link align-items-center pb-0">
@@ -466,10 +469,10 @@
                                     <div class="product-img">
                                         <a href="single-product-variable.html">
                                             <img class="primary-img"
-                                                 src="~/assets/images/website-images/@product.ProductImages.FirstOrDefault(pi=>pi.IsPrimary==true).Image"
+                                                 src="~/assets/images/website-images/@product.ProductImages.FirstOrDefault(pi=>pi.IsPrimary==true)?.Image"
                                                  alt="Product Images" />
                                             <img class="secondary-img"
-                                                 src="~/assets/images/website-images/@product.ProductImages.FirstOrDefault(pi=>pi.IsPrimary==false).Image"
+                                                 src="~/assets/images/website-images/@product.ProductImages.FirstOrDefault(pi=>pi.IsPrimary==false)?.Image"
                                                  alt="Product Images" />
                                         </a>
                                         <div class="product-add-action">

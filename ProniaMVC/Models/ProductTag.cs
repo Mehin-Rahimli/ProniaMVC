@@ -1,6 +1,6 @@
 ﻿namespace ProniaMVC.Models
 {
-    public class ProductTag
+    public class ProductTag:BaseEntity
     {
         public int Id { get; set; }
 

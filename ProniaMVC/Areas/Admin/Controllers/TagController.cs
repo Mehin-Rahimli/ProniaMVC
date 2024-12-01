@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ProniaMVC.Areas.Admin.ViewModels;
 using ProniaMVC.DAL;
 using ProniaMVC.Models;
 
@@ -19,31 +20,45 @@ namespace ProniaMVC.Areas.Admin.Controllers
         {
             List<Tag> tags = await _context.Tags.Where(c => !c.IsDeleted).ToListAsync();
 
+            var tagVM=tags.Select(t=>new GetTagAdminVM
+            {
+                Name = t.Name,
+                Id = t.Id
+            }).ToList();
 
-            return View(tags);
+            return View(tagVM);
         }
 
         public IActionResult Create()
         {
-            return View();
+            CreateTagVM tagVM = new CreateTagVM();
+            return View(tagVM);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Tag tag)
+        public async Task<IActionResult> Create(CreateTagVM tagVM)
         {
             if (!ModelState.IsValid)
             {
-                return View();
+                return View(tagVM);
             }
 
-            bool result = await _context.Tags.AnyAsync(c => c.Name.Trim() == tag.Name.Trim());
+            bool result = await _context.Tags.AnyAsync(c => c.Name.Trim() == tagVM.Name.Trim());
             if (result)
             {
                 ModelState.AddModelError("Name", "Tag already exists");
-                return View();
+                return View(tagVM);
             }
 
-            tag.CreatedAt = DateTime.Now;
+            Tag tag = new()
+            {
+                Name = tagVM.Name
+               
+                
+            };
+
+
+
             await _context.Tags.AddAsync(tag);
             await _context.SaveChangesAsync();
 
@@ -58,34 +73,40 @@ namespace ProniaMVC.Areas.Admin.Controllers
 
             if (tag == null) return NotFound();
 
-            return View(tag);
+            UpdateTagVM tagVM = new()
+            {
+                Name = tag.Name
+            };
+            return View(tagVM);
 
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(int? id, Tag tag)
+        public async Task<IActionResult> Update(int? id, UpdateTagVM tagVM)
         {
             if (id is null || id < 1) return BadRequest();
 
-            Tag existed = await _context.Tags.FirstOrDefaultAsync(c => c.Id == id);
-
-            if (tag is null) return NotFound();
-
+          
             if (!ModelState.IsValid)
             {
-                return View();
-            }
+                return View(tagVM);
+            } 
+            Tag existed = await _context.Tags.FirstOrDefaultAsync(c => c.Id == id); 
+            
 
-            bool result = await _context.Tags.AnyAsync(c => c.Name.Trim() == tag.Name.Trim() && c.Id != id);
+            if (existed is null) return NotFound();
+            
+            bool result = await _context.Tags.AnyAsync(c => c.Name.Trim() == tagVM.Name.Trim() && c.Id != id);
+           
             if (result)
             {
-                ModelState.AddModelError(nameof(Category.Name), "tag already exists");
-                return View();
+                ModelState.AddModelError(nameof(tagVM.Name), "Tag already exists");
+                return View(tagVM);
 
             }
 
 
-            existed.Name = tag.Name;
+            existed.Name = tagVM.Name;
             _context.Tags.Update(existed);
             await _context.SaveChangesAsync();
 
@@ -103,11 +124,10 @@ namespace ProniaMVC.Areas.Admin.Controllers
             if (tag is null) return NotFound();
             tag.IsDeleted = true;
 
-            _context.Tags.Remove(tag);
+           _context.Tags.Remove(tag);
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
-
 
         }
     }

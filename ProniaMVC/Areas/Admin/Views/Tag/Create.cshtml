@@ -1,4 +1,4 @@
-﻿@model Tag
+﻿@model CreateTagVM
 
 <div class="row">
     <div class="col-12 grid-margin stretch-card">
@@ -6,9 +6,9 @@
             <div class="card-body">
                 <h4 class="card-title">Create Tag</h4>
 
-                <form asp-action="Create" asp-controller="Tag" class="forms-sample" method="post">
+                <form  class="forms-sample" method="post">
                     <div class="form-group">
-                        <label for="exampleInputName1">Name</label>
+                        <label asp-for="Name" for="exampleInputName1">Name</label>
                         <input asp-for="Name" class="form-control" placeholder="Name">
                         <span asp-validation-for="Name" class="text-danger"></span>
                     </div>

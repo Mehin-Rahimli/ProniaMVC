@@ -1,7 +1,8 @@
 ﻿@model UpdateProductVM
 
 <div class="row">
-    <div class="col-12 grid-margin stretch-card">
+    <div class="col-12 grid-margin st<a href=" c:\users\user\onedrive\desktop\documents\thirdproject\proniamvc\proniamvc\areas\admin\views\product\update.cshtml">
+        c:\users\user\onedrive\desktop\documents\thirdproject\proniamvc\proniamvc\areas\admin\views\product\update.cshtml</a>retch-card">
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">Update Product</h4>
@@ -38,19 +39,19 @@
                         </select>
                         <span asp-validation-for="TagIds" class="text-danger"></span>
                     </div>
-                   @*  <div class="form-group">
-                        <label asp-for="CategoryId">Category</label>
-                        <select asp-for="CategoryId" class="form-control">
-
-                            @foreach (Category category in Model.Categories)
-                            {
-                                <option value="@category.Id">@category.Name</option>
-                            }
-                             <option selected disabled value="">Choose Category</option> 
-
+                    <div class="form-group">
+                        <label asp-for="ColorIds">Colors</label>
+                        <select asp-for="ColorIds" class="form-control" asp-items="new SelectList(Model.Colors,nameof(Color.Id),nameof(Color.Name))">
                         </select>
-                        <span asp-validation-for="CategoryId" class="text-danger"></span>
-                    </div> *@
+                        <span asp-validation-for="ColorIds" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="SizeIds">Sizes</label>
+                        <select asp-for="SizeIds" class="form-control" asp-items="new SelectList(Model.Sizes,nameof(Size.Id),nameof(Size.Name))">
+                        </select>
+                        <span asp-validation-for="SizeIds" class="text-danger"></span>
+                    </div>
+
                     <div class="form-group">
                         <label asp-for="Description">Description</label>
                         <textarea asp-for="Description" class="form-control" placeholder="Description"></textarea>
@@ -58,7 +59,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary me-2">Submit</button>
-                    <button class="btn btn-light">Cancel</button>
+                    <a asp-action="index" class="btn btn-light">Cancel</a>
                 </form>
             </div>
         </div>

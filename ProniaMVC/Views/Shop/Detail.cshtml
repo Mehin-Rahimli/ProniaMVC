@@ -94,7 +94,7 @@
                             <select class="nice-select wide border-bottom-0 rounded-0">
                                 @foreach(ProductColor color in Model.Product.ProductColors)
                                 {
-                                    <option value="default">@color.Color.Name</option>
+                                    <option value="@color.Color.Id">@color.Color.Name</option>
 
                                 }
                             </select>
@@ -102,9 +102,11 @@
                         <div class="selector-wrap size-option">
                             <span class="selector-title">Size</span>
                             <select class="nice-select wide rounded-0">
-                                <option value="medium">Medium Size & Poot</option>
-                                <option value="large">Large Size With Poot</option>
-                                <option value="small">Small Size With Poot</option>
+                               @foreach(ProductSize size in Model.Product.ProductSizes)
+                                {
+                                    <option value="@size.Size.Id">@size.Size.Name</option>
+                                }
+
                             </select>
                         </div>
                         <p class="short-desc">

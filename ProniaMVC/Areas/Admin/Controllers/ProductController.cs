@@ -26,8 +26,7 @@ namespace ProniaMVC.Areas.Admin.Controllers
         {
             var productsVMs = await _context.Products
                  .Include(p => p.Category)
-                 .Include(p => p.ProductImages
-                 .Where(pi => pi.IsPrimary == true))
+                 .Include(p => p.ProductImages)
                  .Select(p =>
                  new GetProductAdminVM
                  {
@@ -35,7 +34,7 @@ namespace ProniaMVC.Areas.Admin.Controllers
                      Name = p.Name,
                      Price = p.Price,
                      CategoryName = p.Category.Name,
-                     Image = p.ProductImages[0].Image
+                     Image = p.ProductImages.FirstOrDefault(p=>p.IsPrimary==true).Image
                  }
                  )
                  .ToListAsync();
@@ -109,6 +108,8 @@ namespace ProniaMVC.Areas.Admin.Controllers
                 ModelState.AddModelError(nameof(CreateProductVM.CategoryId), "Category doesn't exist");
                 return View(productVM);
             }
+
+          
 
             if (productVM.TagIds is not null)
             {
@@ -193,6 +194,35 @@ namespace ProniaMVC.Areas.Admin.Controllers
             }
 
 
+          if(productVM.AdditionalPhotos is not null)
+            {
+                string text = string.Empty;
+                foreach (IFormFile file in productVM.AdditionalPhotos)
+                {
+                    if (!file.ValidateType("image/"))
+                    {
+                        text += $"<p class=\"text-warning\">{file.FileName} type was not correct</p>";
+                        continue;
+                    }
+                    if (!file.ValidateSize(FileSize.MB, 1))
+                    {
+                        text += $"<p class=\"text-warning\">{file.FileName} size was not correct</p>";
+                        continue;
+                    }
+
+                    product.ProductImages.Add(new ProductImage
+                    {
+                        Image = await file.CreateFileAsync(_env.WebRootPath, "assets", "images", "website-images"),
+                        CreatedAt = DateTime.Now,
+                        IsDeleted = false,
+                        IsPrimary = null
+                    });
+
+                }
+
+                TempData["Filewarning"] = text;
+            }
+
 
             await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
@@ -203,7 +233,7 @@ namespace ProniaMVC.Areas.Admin.Controllers
         public async Task<IActionResult> Update(int? id)
         {
             if (id == null || id < 1) return BadRequest();
-            Product product = await _context.Products.Include(p => p.ProductTags).Include(p => p.ProductColors).Include(p=>p.ProductSizes).FirstOrDefaultAsync(p => p.Id == id);
+            Product product = await _context.Products.Include(p=>p.ProductImages).Include(p => p.ProductTags).Include(p => p.ProductColors).Include(p=>p.ProductSizes).FirstOrDefaultAsync(p => p.Id == id);
            
             if (product == null) return NotFound();
             UpdateProductVM productVM = new()
@@ -214,6 +244,7 @@ namespace ProniaMVC.Areas.Admin.Controllers
                 Description = product.Description,
                 Price = product.Price,
                 TagIds = product.ProductTags.Select(pt => pt.TagId).ToList(),
+                ProductImages=product.ProductImages,
                 Categories = await _context.Categories.ToListAsync(),
                 Tags = await _context.Tags.Where(t => !t.IsDeleted).ToListAsync(),
                 ColorIds = product.ProductColors.Select(pc => pc.ColorId).ToList(),
@@ -230,19 +261,55 @@ namespace ProniaMVC.Areas.Admin.Controllers
         {
             if (id == null || id < 1) return BadRequest();
 
+            Product existed = await _context.Products.Include(p=>p.ProductImages).Include(p => p.ProductTags).Include(p => p.ProductColors).Include(p => p.ProductSizes).FirstOrDefaultAsync(p => p.Id == id);
+
             productVM.Categories = await _context.Categories.ToListAsync();
             productVM.Tags = await _context.Tags.Where(t => !t.IsDeleted).ToListAsync();
             productVM.Colors=await _context.Colors.Where(c=>!c.IsDeleted).ToListAsync();
             productVM.Sizes = await _context.Sizes.Where(s => !s.IsDeleted).ToListAsync();
+            productVM.ProductImages = existed.ProductImages;
 
             if (!ModelState.IsValid)
             {
                 return View(productVM);
             }
 
-            Product existed = await _context.Products.Include(p => p.ProductTags).Include(p=>p.ProductColors).Include(p=>p.ProductSizes).FirstOrDefaultAsync(p => p.Id == id);
+           
 
             if (existed == null) return NotFound();
+
+            if(productVM.MainPhoto != null)
+            {
+                if (!productVM.MainPhoto.ValidateType("image/"))
+                {
+                    ModelState.AddModelError("MainPhoto", "File type is incorrect");
+                    return View(productVM);
+                }
+
+
+                if (!productVM.MainPhoto.ValidateSize(FileSize.MB, 1))
+                {
+                    ModelState.AddModelError("MainPhoto", "File size is incorrect");
+                    return View(productVM);
+                }
+
+            }
+            if (productVM.HoverPhoto != null)
+            {
+                if (!productVM.HoverPhoto.ValidateType("image/"))
+                {
+                    ModelState.AddModelError("HoverPhoto", "File type is incorrect");
+                    return View(productVM);
+                }
+
+
+                if (!productVM.HoverPhoto.ValidateSize(FileSize.MB, 1))
+                {
+                    ModelState.AddModelError("HoverPhoto", "File size is incorrect");
+                    return View(productVM);
+                }
+
+            }
 
 
 
@@ -364,8 +431,83 @@ namespace ProniaMVC.Areas.Admin.Controllers
                 .Select(sId => new ProductSize
                 { SizeId = sId, ProductId = existed.Id }));
 
+            if(productVM.MainPhoto is not null)
+            {
+                string fileName=await productVM.MainPhoto.CreateFileAsync(_env.WebRootPath, "assets", "images", "website-images");
+               
+                
+                ProductImage main=existed.ProductImages.FirstOrDefault(p=>p.IsPrimary==true);
+                main.Image.DeleteFile("");
+                existed.ProductImages.Remove(main);
+                existed.ProductImages.Add(new ProductImage
+                {
+                    CreatedAt = DateTime.Now,
+                    IsDeleted = false,
+                    IsPrimary = true,
+                    Image = fileName
+                });
+            }
+
+            if (productVM.HoverPhoto is not null)
+            {
+                string fileName = await productVM.HoverPhoto.CreateFileAsync(_env.WebRootPath, "assets", "images", "website-images");
 
 
+                ProductImage hover = existed.ProductImages.FirstOrDefault(p => p.IsPrimary == false);
+                hover.Image.DeleteFile("");
+                existed.ProductImages.Remove(hover);
+                existed.ProductImages.Add(new ProductImage
+                {
+                    CreatedAt = DateTime.Now,
+                    IsDeleted = false,
+                    IsPrimary = false,
+                    Image = fileName
+                });
+            }
+
+
+          
+
+            if(productVM.ProductImages is  null)
+            {
+                productVM.ImageIds = new List<int>();
+            }
+
+            var deletedImages = existed.ProductImages.Where(pi => !productVM.ImageIds.Exists(imgId => imgId == pi.Id)&&pi.IsPrimary==null).ToList();
+            deletedImages.ForEach(di=>di.Image.DeleteFile(_env.WebRootPath, "assets", "images", "website-images"));   
+
+          
+                _context.ProductImages.RemoveRange(deletedImages);
+
+
+            if (productVM.AdditionalPhotos is not null)
+            {
+                string text = string.Empty;
+                foreach (IFormFile file in productVM.AdditionalPhotos)
+                {
+                    if (!file.ValidateType("image/"))
+                    {
+                        text += $"<p class=\"text-warning\">{file.FileName} type was not correct</p>";
+                        continue;
+                    }
+                    if (!file.ValidateSize(FileSize.MB, 1))
+                    {
+                        text += $"<p class=\"text-warning\">{file.FileName} size was not correct</p>";
+                        continue;
+                    }
+
+                    existed.ProductImages.Add(new ProductImage
+                    {
+                        Image = await file.CreateFileAsync(_env.WebRootPath, "assets", "images", "website-images"),
+                        CreatedAt = DateTime.Now,
+                        IsDeleted = false,
+                        IsPrimary = null
+                    });
+
+                }
+
+                TempData["Filewarning"] = text;
+            }
 
             existed.SKU = productVM.SKU;
             existed.Price = productVM.Price.Value;

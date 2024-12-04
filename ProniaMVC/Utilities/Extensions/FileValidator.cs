@@ -1,11 +1,35 @@
 ﻿using Microsoft.AspNetCore.Routing;
+using ProniaMVC.DAL;
 using ProniaMVC.Models;
 using ProniaMVC.Utilities.Enums;
+using System.Text.RegularExpressions;
 
 namespace ProniaMVC.Utilities.Extensions
 {
     public static class FileValidator
     {
+       
+        public static string CheckName(this string name)
+        {
+            if(name.Any(char.IsDigit))
+            {              
+                return null;
+            }
+           name = name.Trim();
+           return char.ToUpper(name[0]) + name.Substring(1).ToLower(); ;
+        }
+       
+        public static bool CheckEmail(this string email)
+        {
+            Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+            Match match = regex.Match(email);
+            if(match.Success)
+            {
+                return true ;
+            }
+            return false;
+
+        }
         public static string FilePath(this string fileName,params string[]roots)
         {
             

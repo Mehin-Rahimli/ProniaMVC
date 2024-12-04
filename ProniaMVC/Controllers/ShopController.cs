@@ -27,8 +27,8 @@ namespace ProniaMVC.Controllers
                 .OrderByDescending(pi=>pi.IsPrimary))
                 .Include(p=>p.Category)
                 .Include(p=>p.ProductTags)
-                .ThenInclude(pt=>pt.Tag).
-                Include(p=>p.ProductColors)
+                .ThenInclude(pt=>pt.Tag)
+                .Include(p=>p.ProductColors)
                 .ThenInclude(pc=>pc.Color)
                 .Include(p=>p.ProductSizes)
                 .ThenInclude(ps=>ps.Size)

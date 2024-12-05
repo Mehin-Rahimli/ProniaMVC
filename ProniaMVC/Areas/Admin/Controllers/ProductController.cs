@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProniaMVC.Areas.Admin.ViewModels;
 using ProniaMVC.Areas.Admin.ViewModels;
@@ -11,6 +12,8 @@ namespace ProniaMVC.Areas.Admin.Controllers
 {
 
     [Area("Admin")]
+   // [Authorize(Roles ="Admin,Moderator")]
+
     public class ProductController : Controller
     {
         private readonly AppDbContext _context;
@@ -44,6 +47,8 @@ namespace ProniaMVC.Areas.Admin.Controllers
 
             return View(productsVMs);
         }
+
+ 
 
         public async Task<IActionResult> Create()
         {
@@ -230,6 +235,8 @@ namespace ProniaMVC.Areas.Admin.Controllers
 
         }
 
+
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> Update(int? id)
         {
             if (id == null || id < 1) return BadRequest();

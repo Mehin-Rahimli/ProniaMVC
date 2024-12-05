@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProniaMVC.Areas.Admin.ViewModels;
 using ProniaMVC.DAL;
@@ -7,6 +8,7 @@ using ProniaMVC.Models;
 namespace ProniaMVC.Areas.Admin.Controllers
 {
     [Area("Admin")]
+   // [Authorize(Roles = "Admin,Moderator")]
     public class TagController : Controller
     {
         private readonly AppDbContext _context;

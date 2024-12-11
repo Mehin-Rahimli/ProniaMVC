@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using ProniaMVC.Controllers;
 using ProniaMVC.DAL;
 using ProniaMVC.Models;
+using ProniaMVC.Services.Implementations;
+using ProniaMVC.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +30,12 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(opt =>
 
 }).AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 
+
+
+builder.Services.AddScoped<ILayoutService,LayoutService>();
 var app = builder.Build();
+
+
 
 app.UseAuthentication(); //Login olan userin datalarin saxlamaq ucun(mueyyenlesdirmek ucun)
 app.UseAuthorization(); //Login olan userin rolunu mueyyenlesdirmek ucun

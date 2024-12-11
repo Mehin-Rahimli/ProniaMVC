@@ -41,6 +41,7 @@ namespace ProniaMVC.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateCategoryVM categoryVM )
         {
             if(!ModelState.IsValid)
@@ -85,6 +86,7 @@ namespace ProniaMVC.Areas.Admin.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(int? id,UpdateCategoryVM categoryVM)
         {
             if (id is null || id < 1) return BadRequest();

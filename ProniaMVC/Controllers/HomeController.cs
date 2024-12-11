@@ -27,14 +27,14 @@ namespace ProniaMVC.Controllers
                 .OrderBy(s => s.Order)
                 .Take(7)
                 .ToListAsync(),
-                
-                
+               
 
-                Products=await _context.Products
-                .Take(8)
-                .Include(p=>p.ProductImages
-                .Where(pi=>pi.IsPrimary!=null))
+                NewProducts=await _context.Products.Take(8)
+                .OrderByDescending(p=>p.CreatedAt)
+                .Include(p => p.ProductImages
+                .Where(pi => pi.IsPrimary != null))
                 .ToListAsync(),
+
             };
             return View(homeVM);
         }

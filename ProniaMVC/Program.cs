@@ -9,10 +9,9 @@ using ProniaMVC.Services.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 
 
-
+//builder.Services.AddScoped<IHttpContextAccessor, IHttpContextAccessor>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllersWithViews();
-
-
 builder.Services.AddDbContext<AppDbContext>(opt =>
 opt.UseSqlServer(builder.Configuration.GetConnectionString("Default"))
 );

@@ -1,7 +1,7 @@
-﻿@model List<BasketItemVM>  
+﻿@model List<BasketItemVM>
 
 @{
-    decimal total= 0;
+    decimal total = 0;
 }
 <!-- Begin Main Content Area -->
 <main class="main-content">
@@ -41,13 +41,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                            
-                               @foreach(BasketItemVM itemVM in Model)
+
+                                    @foreach (BasketItemVM itemVM in Model)
                                     {
                                         total += itemVM.SubTotal;
                                         <tr>
                                             <td class="product_remove">
-                                                <a href="#">
+                                                <a asp-action="delete" asp-route-id="@itemVM.Id">
                                                     <i class="pe-7s-close"
                                                        data-tippy="Remove"
                                                        data-tippy-inertia="true"
@@ -70,16 +70,22 @@
                                                 <span class="amount">$@itemVM.Price</span>
                                             </td>
                                             <td class="quantity">
-                                                <div class="cart-plus-minus">
+                                                <div class="cart-minus-plus">
+
+                                                        <form method="post" asp-action="DecreaseCount" asp-route-id="@itemVM.Id">
+                                                        <button type="submit" class="qtybutton">
+                                                                <i class="fa fa-minus"></i>
+                                                            </button>
+                                                        </form>
                                                     <input class="cart-plus-minus-box"
-                                                           value="@itemVM.Count"
-                                                           type="text" />
-                                                    <div class="dec qtybutton">
-                                                        <i class="fa fa-minus"></i>
-                                                    </div>
-                                                    <div class="inc qtybutton">
-                                                        <i class="fa fa-plus"></i>
-                                                    </div>
+                                                               value="@itemVM.Count"
+                                                               type="text"
+                                                               readonly />
+                                                        <form method="post" asp-action="IncreaseCount" asp-route-id="@itemVM.Id">
+                                                        <button  type="submit" class="qtybutton">
+                                                                <i class="fa fa-plus"></i>
+                                                            </button>
+                                                        </form>
                                                 </div>
                                             </td>
                                             <td class="product-subtotal">
@@ -119,7 +125,7 @@
                                 <div class="cart-page-total">
                                     <h2>Cart totals</h2>
                                     <ul>
-                                        
+
                                         <li>Total <span>$@total</span></li>
                                     </ul>
                                     <a href="#">Proceed to checkout</a>

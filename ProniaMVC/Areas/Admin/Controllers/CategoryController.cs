@@ -19,7 +19,10 @@ namespace ProniaMVC.Areas.Admin.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var categoryVMs =await _context.Categories.Where(c=>!c.IsDeleted).Include(c=>c.Products).Select(c=>new GetCategoryAdminVM
+            var categoryVMs =await _context.Categories
+                .Where(c=>!c.IsDeleted)
+                .Include(c=>c.Products)
+                .Select(c=>new GetCategoryAdminVM
 
             {
                 Id=c.Id,

@@ -5,7 +5,7 @@
 <!-- Begin Slider Area -->
 <div class="slider-area">
     <!-- Main Slider -->
-   @Html.Partial("SlidePartialView",Model.Slides)
+    @Html.Partial("SlidePartialView", Model.Slides)
 </div>
 <!-- Slider Area End Here -->
 <!-- Begin Shipping Area -->
@@ -102,19 +102,19 @@
                          id="featured"
                          role="tabpanel"
                          aria-labelledby="featured-tab">
-                       @await Component.InvokeAsync("Product",SortType.Name)
+                        @await Component.InvokeAsync("Product", SortType.Name)
                     </div>
                     <div class="tab-pane fade"
                          id="bestseller"
                          role="tabpanel"
                          aria-labelledby="bestseller-tab">
-                        @await Component.InvokeAsync("Product",SortType.Price)
+                        @await Component.InvokeAsync("Product", SortType.Price)
                     </div>
                     <div class="tab-pane fade"
                          id="latest"
                          role="tabpanel"
                          aria-labelledby="latest-tab">
-                        @await Component.InvokeAsync("Product",SortType.Date)
+                        @await Component.InvokeAsync("Product", SortType.Date)
                     </div>
                 </div>
             </div>
@@ -211,7 +211,7 @@
                     text. It has roots in a piece of classical Latin literature
                 </p>
             </div>
-           @Html.Partial("ProductPartialView",Model.NewProducts)
+            @Html.Partial("ProductPartialView", Model.NewProducts)
         </div>
     </div>
 </div>
@@ -467,3 +467,25 @@
     </div>
 </div>
 <!-- Blog Area End Here -->
+
+
+<script>
+
+    var addBtns = document.querySelectorAll(".cus-add-basket")
+    addBtns.forEach(b => {
+        b.addEventListener("click", function (e)
+        {
+            e.preventDefault()
+            var endpoint = this.getAttribute("href")
+
+            $.ajax({
+                type: "Get",
+                url: endpoint
+            }).done(data => {
+                var cart = document.querySelector("#miniCart")
+                cart.innerHTML = data
+            })
+        })
+    })
+
+</script>

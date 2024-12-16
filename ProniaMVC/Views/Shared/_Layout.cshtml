@@ -2,10 +2,12 @@
 @using ProniaMVC.Services.Interfaces
 
 @inject ILayoutService _LayoutService;
+@inject IBasketService _basketService;
+
 
 @{
     Dictionary<string, string> settings = await _LayoutService.GetSettingsAsync();
-    List<BasketItemVM> basketItems = await _LayoutService.GetBasketAsync();
+    List<BasketItemVM> basketItems = await _basketService.GetBasketAsync();
 }
 <!DOCTYPE html>
 <html lang="zxx">

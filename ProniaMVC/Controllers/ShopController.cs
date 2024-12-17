@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ProniaMVC.DAL;
 using ProniaMVC.Models;
+using ProniaMVC.Utilities.Exceptions;
 using ProniaMVC.ViewModels;
 
 namespace ProniaMVC.Controllers
@@ -20,7 +21,7 @@ namespace ProniaMVC.Controllers
         }
         public async Task<IActionResult> Detail(int? id)
         {
-           if(id== null && id<1)  return BadRequest();
+            if (id == null && id < 1) throw new BadRequestException($"{id} is wrong");
 
             Product? product =await _context.Products
                 .Include(p=>p.ProductImages
@@ -34,7 +35,7 @@ namespace ProniaMVC.Controllers
                 .ThenInclude(ps=>ps.Size)
                 .FirstOrDefaultAsync(p=>p.Id==id);
 
-            if(product == null) return NotFound();
+            if (product == null) throw new NotFoundException($"{id} can not be found");
 
 
 

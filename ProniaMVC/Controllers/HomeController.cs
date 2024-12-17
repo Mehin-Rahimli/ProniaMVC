@@ -18,8 +18,8 @@ namespace ProniaMVC.Controllers
         }
         public async Task<IActionResult> Index()
         {
-          
-           
+
+            
            
             HomeVM homeVM = new HomeVM
             {
@@ -37,6 +37,13 @@ namespace ProniaMVC.Controllers
 
             };
             return View(homeVM);
+        }
+
+
+        public IActionResult Error(string errorMessage)
+        {
+              return View(model:errorMessage);
+
         }
     }
 }

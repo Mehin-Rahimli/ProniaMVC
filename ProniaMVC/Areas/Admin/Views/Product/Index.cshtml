@@ -1,7 +1,7 @@
-﻿@model List<GetProductAdminVM>
+﻿@model PaginatedVM<GetProductAdminVM>
 
 @{
-    int count = 0;
+    int count = (Model.CurrentPage-1)*5;
 }
 
 <div class="row">
@@ -39,7 +39,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (GetProductAdminVM productVM in Model)
+                            @foreach (GetProductAdminVM productVM in Model.items)
                             {
                                 count++;
                                 <tr>
@@ -69,6 +69,19 @@
 
                         </tbody>
                     </table>
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                            <li class="page-item @(Model.CurrentPage<=1?"disabled":"")"><a class="page-link" asp-action="index" asp-route-page="(@Model.CurrentPage-1)">Previous </a>
+                            </li>
+                            @for (int i = 1; i <= Model.TotalPage; i++)
+                            {
+                                <li class="page-item @(Model.CurrentPage==i?"disabled":"")" ><a class="page-link"  asp-action="index" asp-route-page="@i">@i</a></li>
+                            }
+                            
+                          
+                            <li class="page-item  @(Model.TotalPage==Model.CurrentPage?"disabled":"")"><a class="page-link" asp-action="index" asp-route-page="@(Model.CurrentPage+1)">Next</a></li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>

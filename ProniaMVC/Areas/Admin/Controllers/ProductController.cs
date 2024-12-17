@@ -25,9 +25,22 @@ namespace ProniaMVC.Areas.Admin.Controllers
             _env = env;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page=1)
         {
-            var productsVMs = await _context.Products
+            if(page<1) return BadRequest();
+            int count =await _context.Products.CountAsync();
+            double total=Math.Ceiling((double)count/5);
+
+            if (page > total) return BadRequest();
+               
+
+            PaginatedVM<GetProductAdminVM> paginatedVM = new() 
+            { 
+                TotalPage=total,
+                CurrentPage=page,
+                items = await _context.Products
+                 .Skip((page - 1) * 5)
+                .Take(5)
                  .Include(p => p.Category)
                  .Include(p => p.ProductImages)
                  .Select(p =>
@@ -37,15 +50,15 @@ namespace ProniaMVC.Areas.Admin.Controllers
                      Name = p.Name,
                      Price = p.Price,
                      CategoryName = p.Category.Name,
-                     Image = p.ProductImages.FirstOrDefault(p=>p.IsPrimary==true).Image
+                     Image = p.ProductImages.FirstOrDefault(p => p.IsPrimary == true).Image
                  }
                  )
-                 .ToListAsync();
+                 .ToListAsync()
+            };
 
 
 
-
-            return View(productsVMs);
+            return View(paginatedVM);
         }
 
  

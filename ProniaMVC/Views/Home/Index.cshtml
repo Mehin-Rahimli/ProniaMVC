@@ -478,13 +478,30 @@
             e.preventDefault()
             var endpoint = this.getAttribute("href")
 
-            $.ajax({
-                type: "Get",
-                url: endpoint
-            }).done(data => {
+            fetch(endpoint).then(response=>response.text()).then(data=>{
                 var cart = document.querySelector("#miniCart")
-                cart.innerHTML = data
+                   cart.innerHTML = data
+
+                   var basketCount=document.querySelector("#basket-count").value
+                   var quantites=document.querySelectorAll(".cus-quantity")
+
+                   quantities.forEach(q=>q.innerHTML=basketCount)
+
             })
+
+
+            // $.ajax({
+            //     type: "Get",
+            //     url: endpoint
+            // }).done(data => {
+            //     var cart = document.querySelector("#miniCart")
+            //     cart.innerHTML = data
+
+            //     var basketCount=document.querySelector("#basket-count").value
+            //     var quantites=document.querySelectorAll(".cus-quantity")
+
+            //     quantities.forEach(q=>q.innerHTML=basketCount)
+            // })
         })
     })
 

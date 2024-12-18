@@ -51,25 +51,39 @@ namespace ProniaMVC.Services.Implementations
                     return basketVM;
                 }
                 cookiesVM = JsonConvert.DeserializeObject<List<BasketCookieItemVM>>(cookie);
-
-
-                foreach (BasketCookieItemVM item in cookiesVM)
+                basketVM = await _context.Products.Where(p => cookiesVM.Select(c => c.Id).Contains(p.Id)).Select(p => new BasketItemVM
                 {
-                    Product product = await _context.Products.Include(p => p.ProductImages.Where(p => p.IsPrimary == true)).FirstOrDefaultAsync(p => p.Id == item.Id);
+                    Id = p.Id,
+                    Name = p.Name,
+                    Image = p.ProductImages[0].Image,
+                    Price = p.Price,
+                   
+                }).ToListAsync();
 
-                    if (product != null)
-                    {
-                        basketVM.Add(new BasketItemVM
-                        {
-                            Id = product.Id,
-                            Name = product.Name,
-                            Image = product.ProductImages[0].Image,
-                            Price = product.Price,
-                            Count = item.Count,
-                            SubTotal = (decimal)item.Count * product.Price
-                        });
-                    }
-                }
+
+                basketVM.ForEach(bi =>
+                {
+                    bi.Count = cookiesVM.FirstOrDefault(c => c.Id == bi.Id).Count;
+                    bi.SubTotal =bi.Price* bi.Count;
+                
+                });
+                //foreach (BasketCookieItemVM item in cookiesVM)
+                //{
+                //    Product product = await _context.Products.Include(p => p.ProductImages.Where(p => p.IsPrimary == true)).FirstOrDefaultAsync(p => p.Id == item.Id);
+
+                //    if (product != null)
+                //    {
+                //        basketVM.Add(new BasketItemVM
+                //        {
+                //            Id = product.Id,
+                //            Name = product.Name,
+                //            Image = product.ProductImages[0].Image,
+                //            Price = product.Price,
+                //            Count = item.Count,
+                //            SubTotal = (decimal)item.Count * product.Price
+                //        });
+                //    }
+                //}
             }
 
             return basketVM;

@@ -284,9 +284,9 @@ namespace ProniaMVC.Areas.Admin.Controllers
             Product existed = await _context.Products.Include(p=>p.ProductImages).Include(p => p.ProductTags).Include(p => p.ProductColors).Include(p => p.ProductSizes).FirstOrDefaultAsync(p => p.Id == id);
 
             productVM.Categories = await _context.Categories.ToListAsync();
-            productVM.Tags = await _context.Tags.Where(t => !t.IsDeleted).ToListAsync();
-            productVM.Colors=await _context.Colors.Where(c=>!c.IsDeleted).ToListAsync();
-            productVM.Sizes = await _context.Sizes.Where(s => !s.IsDeleted).ToListAsync();
+            productVM.Tags = await _context.Tags.ToListAsync();
+            productVM.Colors=await _context.Colors.ToListAsync();
+            productVM.Sizes = await _context.Sizes.ToListAsync();
             productVM.ProductImages = existed.ProductImages;
 
             if (!ModelState.IsValid)
@@ -457,7 +457,7 @@ namespace ProniaMVC.Areas.Admin.Controllers
                
                 
                 ProductImage main=existed.ProductImages.FirstOrDefault(p=>p.IsPrimary==true);
-                main.Image.DeleteFile("");
+                main.Image.DeleteFile(_env.WebRootPath, "assets", "images", "website-images");
                 existed.ProductImages.Remove(main);
                 existed.ProductImages.Add(new ProductImage
                 {
@@ -474,7 +474,7 @@ namespace ProniaMVC.Areas.Admin.Controllers
 
 
                 ProductImage hover = existed.ProductImages.FirstOrDefault(p => p.IsPrimary == false);
-                hover.Image.DeleteFile("");
+                hover.Image.DeleteFile(_env.WebRootPath, "assets", "images", "website-images");
                 existed.ProductImages.Remove(hover);
                 existed.ProductImages.Add(new ProductImage
                 {

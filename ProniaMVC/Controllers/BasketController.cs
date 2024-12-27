@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using ProniaMVC.DAL;
 using ProniaMVC.Models;
 using ProniaMVC.Services.Interfaces;
 using ProniaMVC.ViewModels;
+using System.Diagnostics.Metrics;
 using System.Security.Claims;
 
 namespace ProniaMVC.Controllers
@@ -16,12 +18,14 @@ namespace ProniaMVC.Controllers
         private readonly AppDbContext _context;
         private readonly UserManager<AppUser> _userManager;
         private readonly IBasketService _basketService;
+        private readonly IEmailService _emailService;
 
-        public BasketController(AppDbContext context, UserManager<AppUser> userManager, IBasketService basketService)
+        public BasketController(AppDbContext context, UserManager<AppUser> userManager, IBasketService basketService, IEmailService emailService)
         {
             _context = context;
             _userManager = userManager;
             _basketService = basketService;
+            _emailService = emailService;
         }
         public async Task<IActionResult> Index()
         {
@@ -180,12 +184,12 @@ namespace ProniaMVC.Controllers
                     if (item.Count > 1)
                     {
                         item.Count--;
-                       
+
                     }
                     else
                     {
                         user.BasketItems.Remove(item);
-                        
+
                     }
                     await _context.SaveChangesAsync();
                 }
@@ -206,12 +210,12 @@ namespace ProniaMVC.Controllers
                         if (existed.Count > 1)
                         {
                             existed.Count--;
-                            
+
                         }
                         else
                         {
                             basket.Remove(existed);
-                           
+
                         }
                         string json = JsonConvert.SerializeObject(basket);
                         Response.Cookies.Append("basket", json);
@@ -290,6 +294,10 @@ namespace ProniaMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Checkout(OrderVM orderVM)
         {
+
+            AppUser? user = await _userManager.Users.Include(u => u.BasketItems)
+            .FirstOrDefaultAsync(bi => bi.Id == User.FindFirstValue(ClaimTypes.NameIdentifier));
+
             List<BasketItem> basketItems = await _context.BasketItems
                 .Where(bi => bi.AppUserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
                 .Include(bi => bi.Product)
@@ -328,6 +336,29 @@ namespace ProniaMVC.Controllers
             await _context.AddAsync(order);
             _context.BasketItems.RemoveRange(basketItems);
             await _context.SaveChangesAsync();
+
+            string body = @"
+                Your order successfully placed:
+                <table border=""1"">
+                     <thead>
+                         <tr>
+                              <th>Name</th>
+                             <th>Price</th>
+                             <th>Count</th>
+                         </tr>
+                     </thead>
+                     <tbody>";
+            foreach (var item in order.OrderItems)
+            {
+                body += @$" <tr>
+                              <td>{item.Product.Name}</td>
+                              <td>{item.Price}</td>
+                              <td>{item.Count}</td>
+                            </tr>";
+            }
+            body += @"</tbody>
+                   </table>";
+            await _emailService.SendMailAsync(user.Email, "Your Order",body,true);
             return RedirectToAction("Index", "Home");
         }
     }

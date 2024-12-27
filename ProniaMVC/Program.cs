@@ -4,6 +4,7 @@ using ProniaMVC.Controllers;
 using ProniaMVC.DAL;
 using ProniaMVC.Middlewares;
 using ProniaMVC.Models;
+using ProniaMVC.Services;
 using ProniaMVC.Services.Implementations;
 using ProniaMVC.Services.Interfaces;
 
@@ -34,6 +35,8 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(opt =>
 
 builder.Services.AddScoped<ILayoutService,LayoutService>();
 builder.Services.AddScoped<IBasketService,BasketService>();
+builder.Services.AddScoped<IEmailService,EmailService>();
+
 var app = builder.Build();
 
 
@@ -42,7 +45,7 @@ app.UseAuthentication(); //Login olan userin datalarin saxlamaq ucun(mueyyenlesd
 app.UseAuthorization(); //Login olan userin rolunu mueyyenlesdirmek ucun
 
 app.UseStaticFiles();
-//app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 app.MapControllerRoute(
 
     "admin",

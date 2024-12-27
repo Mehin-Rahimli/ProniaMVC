@@ -249,7 +249,7 @@ namespace ProniaMVC.Areas.Admin.Controllers
         }
 
 
-        [Authorize(Roles ="Admin")]
+       // [Authorize(Roles ="Admin")]
         public async Task<IActionResult> Update(int? id)
         {
             if (id == null || id < 1) return BadRequest();
@@ -457,7 +457,7 @@ namespace ProniaMVC.Areas.Admin.Controllers
                
                 
                 ProductImage main=existed.ProductImages.FirstOrDefault(p=>p.IsPrimary==true);
-                main.Image.DeleteFile(_env.WebRootPath, "assets", "images", "website-images");
+                main.Image.DeleteFile();
                 existed.ProductImages.Remove(main);
                 existed.ProductImages.Add(new ProductImage
                 {
@@ -474,7 +474,7 @@ namespace ProniaMVC.Areas.Admin.Controllers
 
 
                 ProductImage hover = existed.ProductImages.FirstOrDefault(p => p.IsPrimary == false);
-                hover.Image.DeleteFile(_env.WebRootPath, "assets", "images", "website-images");
+                hover.Image.DeleteFile();
                 existed.ProductImages.Remove(hover);
                 existed.ProductImages.Add(new ProductImage
                 {
@@ -534,10 +534,31 @@ namespace ProniaMVC.Areas.Admin.Controllers
             existed.CategoryId = productVM.CategoryId.Value;
             existed.Description = productVM.Description;
             existed.Name = productVM.Name;
-
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
 
+        }
+
+        public async Task<IActionResult> Delete(int? id)
+        {
+
+            if (id == null || id < 1) return BadRequest();
+
+            var product = await _context.Products
+                .Include(p => p.ProductImages)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (product == null) return NotFound();
+            foreach (var image in product.ProductImages)
+            {
+                image.Image.DeleteFile(_env.WebRootPath, "assets", "images", "website-images");
+            }
+            _context.ProductImages.RemoveRange(product.ProductImages);
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

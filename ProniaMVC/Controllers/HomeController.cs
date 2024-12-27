@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ProniaMVC.DAL;
 using ProniaMVC.Models;
+using ProniaMVC.Services;
 using ProniaMVC.ViewModels;
 
 namespace ProniaMVC.Controllers
@@ -14,11 +15,10 @@ namespace ProniaMVC.Controllers
         {
 
            _context=context;
-           
         }
         public async Task<IActionResult> Index()
         {
-
+            await _emailService.SendeMailAsync();
             
            
             HomeVM homeVM = new HomeVM
